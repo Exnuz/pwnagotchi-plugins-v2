@@ -10,14 +10,14 @@ from pwnagotchi.ui.view import BLACK
 # Информация об авторе и версии
 class ClockHubv2(plugins.Plugin):
     __author__ = 'Exnuz'
-    __version__ = '2.0.2'
+    __version__ = '2.0.3'
     __license__ = 'GPL3'
     __description__ = 'Clock/Date for pwnagotchi'
 
     # Параметры для настройки в config.toml
     # main.plugins.clock_hub_v2.enabled = true
-    # main.plugins.clock_hub_v2.time_position = "50,60"
-    # main.plugins.clock_hub_v2.date_position = "50,70"
+    # main.plugins.clock_hub_v2.time_position = "-5,94"
+    # main.plugins.clock_hub_v2.date_position = "-5,101"
 
     # Логика загрузки плагина
     def on_loaded(self):
@@ -38,8 +38,8 @@ class ClockHubv2(plugins.Plugin):
     def on_ui_setup(self, ui):
         try:
             # Получение позиций из конфигурации с значениями по умолчанию
-            time_pos_str = self.options.get('time_position', '50,60')
-            date_pos_str = self.options.get('date_position', '50,70')
+            time_pos_str = self.options.get('time_position', '-5,94')
+            date_pos_str = self.options.get('date_position', '-5,101')
 
             # Конвертация строковых позиций в кортежи чисел
             time_pos = tuple(map(int, time_pos_str.replace(' ', '').split(',')))

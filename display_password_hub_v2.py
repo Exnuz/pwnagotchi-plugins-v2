@@ -9,21 +9,33 @@ from pwnagotchi.ui.view import BLACK
 # Информация об авторе и версии
 class DisplayPasswordHubv2(plugins.Plugin):
     __author__ = 'Exnuz'
-    __version__ = '2.0.2'
+    __version__ = '2.0.3'
     __license__ = 'GPL3'
     __description__ = 'Plugin to display hacked network SSID and password screen'
 
     # Параметры для настройки в config.toml
     # main.plugins.display_password_hub_v2.enabled = true
     # main.plugins.display_password_hub_v2.fields = "ssid,password"
-    # main.plugins.display_password_hub_v2.ssid_position = "0,91"
-    # main.plugins.display_password_hub_v2.password_position = "0,97"
+    # main.plugins.display_password_hub_v2.ssid_label = "SSID"
+    # main.plugins.display_password_hub_v2.password_label = "Pass"
+    # main.plugins.display_password_hub_v2.ssid_position = "40,94"
+    # main.plugins.display_password_hub_v2.password_position = "40,101"
 
     ALLOWED_FIELDS = {
         'ssid': 'get_last_network_and_password',
         'password': 'get_last_network_and_password'
     }
     DEFAULT_FIELDS = ['ssid', 'password']
+    
+    DEFAULT_LABELS = {
+        'ssid': 'SSID',
+        'password': 'Password'
+    }
+
+    DEFAULT_POSITIONS = {
+        'ssid': '40,94',  # Значение по умолчанию для SSID
+        'password': '40,101'  # Значение по умолчанию для пароля
+    }
 
     def on_loaded(self):
         logging.info("[DisplayPassword_HUB_v2] Plugin loaded.")
@@ -47,7 +59,7 @@ class DisplayPasswordHubv2(plugins.Plugin):
             logging.error(f'[DisplayPassword_HUB_v2] Error getting last SSID and password: {e}')
             return 'N/A', 'N/A'
 
-    # Настройка интерфейса с поддержкой различных экранов
+    # Настройка интерфейса (без проверки типов экранов)
     def on_ui_setup(self, ui):
         try:
             # Получение списка полей из конфигурации
@@ -56,19 +68,22 @@ class DisplayPasswordHubv2(plugins.Plugin):
 
             # Добавление элементов на интерфейс
             for field in self.fields:
-                # Получение позиций для каждого поля
-                position_str = self.options.get(f'{field}_position', '0,0')
+                # Получение позиций для каждого поля с учетом значений по умолчанию
+                position_str = self.options.get(f'{field}_position', self.DEFAULT_POSITIONS[field])
                 position = tuple(map(int, position_str.split(',')))
+
+                # Получение названий из конфигурации
+                label = self.options.get(f'{field}_label', self.DEFAULT_LABELS[field])
 
                 # Добавление элемента на интерфейс
                 ui.add_element(f'display_{field}', LabeledValue(
                     color=BLACK,
-                    label=f'{field.lower()}:',  # Отображаем маленькими буквами
+                    label=label,  # Устанавливаем название из конфигурации
                     value='N/A',
                     position=position,
                     label_font=fonts.Bold,
                     text_font=fonts.Small,
-                    label_spacing=-1,  # Уменьшаем расстояние между названием и значением
+                    label_spacing=0,  # Уменьшаем расстояние между названием и значением
                 ))
 
         except Exception as e:

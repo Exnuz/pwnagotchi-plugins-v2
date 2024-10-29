@@ -9,7 +9,7 @@ from pwnagotchi.ui.view import BLACK
 # Информация об авторе и версии
 class MemTempHubv2(plugins.Plugin):
     __author__ = 'Exnuz'
-    __version__ = '2.0.2'
+    __version__ = '2.0.3'
     __license__ = 'GPL3'
     __description__ = 'A plugin that displays memory usage, CPU load, temperature, and frequency.'
 
@@ -30,6 +30,14 @@ class MemTempHubv2(plugins.Plugin):
         'freq': 'cpu_freq',
     }
     DEFAULT_FIELDS = ['mem', 'cpu', 'temp', 'freq']
+    
+    # Значения по умолчанию для позиций
+    DEFAULT_POSITIONS = {
+        'mem': (210, 80),
+        'cpu': (210, 87),
+        'temp': (210, 94),
+        'freq': (210, 101),
+    }
 
     # Логика загрузки плагина
     def on_loaded(self):
@@ -87,9 +95,12 @@ class MemTempHubv2(plugins.Plugin):
 
             # Добавление элементов на интерфейс
             for field in self.fields:
-                # Получение позиций для каждого поля
-                position_str = self.options.get(f'{field}_position', '0,0')
-                position = tuple(map(int, position_str.split(',')))
+                # Получение позиций для каждого поля с использованием значений по умолчанию
+                position_str = self.options.get(f'{field}_position', None)
+                if position_str:
+                    position = tuple(map(int, position_str.split(',')))
+                else:
+                    position = self.DEFAULT_POSITIONS.get(field, (0, 0))
 
                 # Добавление элемента на интерфейс
                 ui.add_element(f'memtemp_{field}', LabeledValue(
