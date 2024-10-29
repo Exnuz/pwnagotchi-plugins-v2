@@ -9,14 +9,21 @@ from pwnagotchi.ui.view import BLACK
 # Информация об авторе и версии
 class DisplayPasswordHubv2(plugins.Plugin):
     __author__ = 'Exnuz'
-    __version__ = '2.0.0'
+    __version__ = '2.0.2'
     __license__ = 'GPL3'
     __description__ = 'Plugin to display hacked network SSID and password screen'
-    
+
     # Параметры для настройки в config.toml
     # main.plugins.display_password_hub_v2.enabled = true
+    # main.plugins.display_password_hub_v2.fields = "ssid,password"
     # main.plugins.display_password_hub_v2.ssid_position = "0,91"
-    # main.plugins.display_password_hub_v2.password_position = "0,101"
+    # main.plugins.display_password_hub_v2.password_position = "0,97"
+
+    ALLOWED_FIELDS = {
+        'ssid': 'get_last_network_and_password',
+        'password': 'get_last_network_and_password'
+    }
+    DEFAULT_FIELDS = ['ssid', 'password']
 
     def on_loaded(self):
         logging.info("[DisplayPassword_HUB_v2] Plugin loaded.")
@@ -43,46 +50,29 @@ class DisplayPasswordHubv2(plugins.Plugin):
     # Настройка интерфейса с поддержкой различных экранов
     def on_ui_setup(self, ui):
         try:
-            # Получение позиций из конфигурации
-            ssid_pos_str = self.options.get('ssid_position', '0,91')
-            password_pos_str = self.options.get('password_position', '0,97')
-            
-            ssid_position = tuple(map(int, ssid_pos_str.split(',')))
-            password_position = tuple(map(int, password_pos_str.split(',')))
-
-            # Проверка экрана и корректировка позиций
-            if ui.is_waveshare_v1():
-                ssid_position = (50, 91)
-                password_position = (50, 101)
-            elif ui.is_waveshare_v2():
-                ssid_position = (60, 91)
-                password_position = (60, 101)
-            elif ui.is_waveshare_v3():
-                ssid_position = (70, 91)
-                password_position = (70, 101)
-            elif ui.is_waveshare_v4():
-                ssid_position = (80, 91)
-                password_position = (80, 101)
+            # Получение списка полей из конфигурации
+            self.fields = self.options.get('fields', ','.join(self.DEFAULT_FIELDS)).split(',')
+            self.fields = [x.strip() for x in self.fields if x.strip() in self.ALLOWED_FIELDS.keys()]
 
             # Добавление элементов на интерфейс
-            ui.add_element('display_ssid', LabeledValue(
-                color=BLACK,
-                label='', # Пустая метка, можно добавить "SSID:" если нужно
-                value='',
-                position=ssid_position,
-                label_font=fonts.Bold,
-                text_font=fonts.Small
-            ))
-            ui.add_element('display_password', LabeledValue(
-                color=BLACK,
-                label='', # Пустая метка, можно добавить "Пароль:" если нужно
-                value='',
-                position=password_position,
-                label_font=fonts.Bold,
-                text_font=fonts.Small
-            ))
+            for field in self.fields:
+                # Получение позиций для каждого поля
+                position_str = self.options.get(f'{field}_position', '0,0')
+                position = tuple(map(int, position_str.split(',')))
+
+                # Добавление элемента на интерфейс
+                ui.add_element(f'display_{field}', LabeledValue(
+                    color=BLACK,
+                    label=f'{field.lower()}:',  # Отображаем маленькими буквами
+                    value='N/A',
+                    position=position,
+                    label_font=fonts.Bold,
+                    text_font=fonts.Small,
+                    label_spacing=-1,  # Уменьшаем расстояние между названием и значением
+                ))
+
         except Exception as e:
-            logging.error(f'[DisplayPassword_HUB_v2] Error when setting up the interface: {e}')
+            logging.error(f'[DisplayPassword_HUB_v2] Error setting up UI: {e}')
 
     def on_ui_update(self, ui):
         try:
@@ -90,12 +80,12 @@ class DisplayPasswordHubv2(plugins.Plugin):
             ui.set('display_ssid', ssid)
             ui.set('display_password', password)
         except Exception as e:
-            logging.error(f'[DisplayPassword_HUB_v2] Error during update UI: {e}')
+            logging.error(f'[DisplayPassword_HUB_v2] Error updating UI: {e}')
 
     def on_unload(self, ui):
         try:
             with ui._lock:
-                ui.remove_element('display_ssid')
-                ui.remove_element('display_password')
+                for field in self.fields:
+                    ui.remove_element(f'display_{field}')
         except Exception as e:
-            logging.error(f'[DisplayPassword_HUB_v2] Error when unloading elements UI: {e}')
+            logging.error(f'[DisplayPassword_HUB_v2] Error unloading UI elements: {e}')

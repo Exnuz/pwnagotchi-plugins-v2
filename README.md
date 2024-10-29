@@ -7,8 +7,8 @@
 Плагин для отображения текущего времени и даты на экране вашего Pwnagotchi.
 ```
 main.plugins.clock_hub_v2.enabled = true
-main.plugins.clock_hub_v2.time_position = "50,60"
-main.plugins.clock_hub_v2.date_position = "50,70"
+main.plugins.clock_hub_v2.time_position = "-5, 94"
+main.plugins.clock_hub_v2.date_position = "-5, 101"
 ```
 
 2. display_password_hub_v2.py
@@ -16,23 +16,21 @@ main.plugins.clock_hub_v2.date_position = "50,70"
 Этот плагин отображает SSID и пароли недавно взломанных сетей полученных с [Wpa-Sec](https://wpa-sec.stanev.org).
 ```
 main.plugins.display_password_hub_v2.enabled = true
-main.plugins.display_password_hub_v2.ssid_position = "0,91"
-main.plugins.display_password_hub_v2.password_position = "0,101"
+main.plugins.display_password_hub_v2.ssid_position = "40,94"
+main.plugins.display_password_hub_v2.password_position = "40,101"
 ```
 3. memtemp_hub_v2.py
 
 Плагин, отображает использование памяти, загрузку CPU, температуру и частоту процессора. 
 ```
 
-main.plugins.memtemp_hub_v2.enabled = true
+main.plugins.memtemp_hub_v2.enabled=true
 main.plugins.memtemp_hub_v2.scale = "celsius"
 main.plugins.memtemp_hub_v2.fields = "mem,cpu,temp,freq"
 main.plugins.memtemp_hub_v2.mem_position = "210,80"
 main.plugins.memtemp_hub_v2.cpu_position = "210,87"
 main.plugins.memtemp_hub_v2.temp_position = "210,94"
 main.plugins.memtemp_hub_v2.freq_position = "210,101"
-main.plugins.memtemp_hub_v2.time_position = "50,60"
-main.plugins.memtemp_hub_v2.date_position = "50,70"
 ```
 
 ## Установка и настройка

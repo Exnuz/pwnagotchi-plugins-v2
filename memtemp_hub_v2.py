@@ -9,7 +9,7 @@ from pwnagotchi.ui.view import BLACK
 # Информация об авторе и версии
 class MemTempHubv2(plugins.Plugin):
     __author__ = 'Exnuz'
-    __version__ = '2.0.1'
+    __version__ = '2.0.2'
     __license__ = 'GPL3'
     __description__ = 'A plugin that displays memory usage, CPU load, temperature, and frequency.'
 

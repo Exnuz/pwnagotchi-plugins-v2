@@ -10,7 +10,7 @@ from pwnagotchi.ui.view import BLACK
 # Информация об авторе и версии
 class ClockHubv2(plugins.Plugin):
     __author__ = 'Exnuz'
-    __version__ = '2.0.0'
+    __version__ = '2.0.2'
     __license__ = 'GPL3'
     __description__ = 'Clock/Date for pwnagotchi'
 
@@ -31,36 +31,19 @@ class ClockHubv2(plugins.Plugin):
             time_str = now.strftime("%H:%M:%S")
             return date_str, time_str
         except Exception as e:
-            logging.error(f'[Clock-HUB] Error updating time: {e}')
+            logging.error(f'[Clock_HUB_v2] Error updating time: {e}')
             return 'N/A', 'N/A'
 
-    # Настройка интерфейса (с поддержкой различных экранов)
+    # Настройка интерфейса
     def on_ui_setup(self, ui):
         try:
             # Получение позиций из конфигурации с значениями по умолчанию
             time_pos_str = self.options.get('time_position', '50,60')
             date_pos_str = self.options.get('date_position', '50,70')
-            
+
             # Конвертация строковых позиций в кортежи чисел
             time_pos = tuple(map(int, time_pos_str.replace(' ', '').split(',')))
             date_pos = tuple(map(int, date_pos_str.replace(' ', '').split(',')))
-
-            # Проверка экрана и корректировка позиций (при необходимости)
-            if ui.is_waveshare_v1():
-                time_pos = time_pos or (50, 60)
-                date_pos = date_pos or (50, 70)
-            elif ui.is_waveshare_v2():
-                time_pos = time_pos or (60, 60)
-                date_pos = date_pos or (60, 70)
-            elif ui.is_waveshare_v3():
-                time_pos = time_pos or (70, 60)
-                date_pos = date_pos or (70, 70)
-            elif ui.is_waveshare_v4():
-                time_pos = time_pos or (80, 60)
-                date_pos = date_pos or (80, 70)
-            else:
-                time_pos = time_pos or (0, 91)
-                date_pos = date_pos or (0, 101)
 
             # Добавление элементов на интерфейс
             ui.add_element('clock_date', LabeledValue(
