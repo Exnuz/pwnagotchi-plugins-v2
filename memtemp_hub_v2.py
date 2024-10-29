@@ -9,7 +9,7 @@ from pwnagotchi.ui.view import BLACK
 # Информация об авторе и версии
 class MemTempHubv2(plugins.Plugin):
     __author__ = 'Exnuz'
-    __version__ = '2.0.0'
+    __version__ = '2.0.1'
     __license__ = 'GPL3'
     __description__ = 'A plugin that displays memory usage, CPU load, temperature, and frequency.'
 
@@ -21,8 +21,6 @@ class MemTempHubv2(plugins.Plugin):
     # main.plugins.memtemp_hub_v2.cpu_position = "210,87"
     # main.plugins.memtemp_hub_v2.temp_position = "210,94"
     # main.plugins.memtemp_hub_v2.freq_position = "210,101"
-    # main.plugins.memtemp_hub_v2.time_position = "50,60"
-    # main.plugins.memtemp_hub_v2.date_position = "50,70"
 
     # Разрешенные поля и поля по умолчанию
     ALLOWED_FIELDS = {
@@ -35,14 +33,14 @@ class MemTempHubv2(plugins.Plugin):
 
     # Логика загрузки плагина
     def on_loaded(self):
-        logging.info('[Memtemp_V2_HUB] Plugin loaded.')
+        logging.info('[MemTemp_Hub_v2] Plugin loaded.')
 
     # Получение использования памяти
     def mem_usage(self):
         try:
             return f'{int(pwnagotchi.mem_usage() * 100)}%'
         except Exception as e:
-            logging.error(f'[Memtemp_V2_HUB] Error getting memory usage: {e}')
+            logging.error(f'[MemTemp_Hub_v2] Error getting memory usage: {e}')
             return 'N/A'
 
     # Получение загрузки CPU
@@ -50,7 +48,7 @@ class MemTempHubv2(plugins.Plugin):
         try:
             return f'{int(pwnagotchi.cpu_load() * 100)}%'
         except Exception as e:
-            logging.error(f'[Memtemp_V2_HUB] Error getting CPU load: {e}')
+            logging.error(f'[MemTemp_Hub_v2] Error getting CPU load: {e}')
             return 'N/A'
 
     # Получение температуры CPU
@@ -66,9 +64,9 @@ class MemTempHubv2(plugins.Plugin):
             else:
                 temp = pwnagotchi.temperature()
                 symbol = 'C'
-            return f'{temp:}{symbol}'
+            return f'{temp:.1f}{symbol}'
         except Exception as e:
-            logging.error(f'[Memtemp_V2_HUB] Error getting CPU temperature: {e}')
+            logging.error(f'[MemTemp_Hub_v2] Error getting CPU temperature: {e}')
             return 'N/A'
 
     # Получение частоты CPU
@@ -77,37 +75,12 @@ class MemTempHubv2(plugins.Plugin):
             with open('/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq', 'rt') as fp:
                 return f'{round(float(fp.readline()) / 1000000, 1)}'
         except Exception as e:
-            logging.error(f'[Memtemp_V2_HUB] Error getting CPU frequency: {e}')
+            logging.error(f'[MemTemp_Hub_v2] Error getting CPU frequency: {e}')
             return 'N/A'
 
-    # Настройка интерфейса (с поддержкой различных экранов)
+    # Настройка интерфейса
     def on_ui_setup(self, ui):
         try:
-            # Получение позиций из конфигурации с значениями по умолчанию
-            time_pos = self.options.get('time_position', '50,60')
-            date_pos = self.options.get('date_position', '50,70')
-            
-            # Конвертация позиций из строк в кортежи
-            time_pos = tuple(map(int, time_pos.split(',')))
-            date_pos = tuple(map(int, date_pos.split(',')))
-
-            # Проверка экрана и установка позиций
-            if ui.is_waveshare_1():
-                time_pos = (50, 60)
-                date_pos = (50, 70)
-            elif ui.is_waveshare_2():
-                time_pos = (60, 60)
-                date_pos = (60, 70)
-            elif ui.is_waveshare_3():
-                time_pos = (70, 60)
-                date_pos = (70, 70)
-            elif ui.is_waveshare_4():
-                time_pos = (80, 60)
-                date_pos = (80, 70)
-            else:
-                time_pos = (00, 91)
-                date_pos = (00, 101)
-
             # Получение списка полей из конфигурации
             self.fields = self.options.get('fields', ','.join(self.DEFAULT_FIELDS)).split(',')
             self.fields = [x.strip() for x in self.fields if x.strip() in self.ALLOWED_FIELDS.keys()]
@@ -130,7 +103,7 @@ class MemTempHubv2(plugins.Plugin):
                 ))
 
         except Exception as e:
-            logging.error(f'[Memtemp_V2_HUB] Error setting up UI: {e}')
+            logging.error(f'[MemTemp_Hub_v2] Error setting up UI: {e}')
 
     # Обновление элементов интерфейса
     def on_ui_update(self, ui):
@@ -138,7 +111,7 @@ class MemTempHubv2(plugins.Plugin):
             for field in self.fields:
                 ui.set(f'memtemp_{field}', getattr(self, self.ALLOWED_FIELDS[field])())
         except Exception as e:
-            logging.error(f'[Memtemp_V2_HUB] Error updating UI: {e}')
+            logging.error(f'[MemTemp_Hub_v2] Error updating UI: {e}')
 
     # Очистка при выгрузке плагина
     def on_unload(self, ui):
@@ -147,4 +120,4 @@ class MemTempHubv2(plugins.Plugin):
                 for field in self.fields:
                     ui.remove_element(f'memtemp_{field}')
         except Exception as e:
-            logging.error(f'[Memtemp_V2_HUB] Error unloading UI elements: {e}')
+            logging.error(f'[MemTemp_Hub_v2] Error unloading UI elements: {e}')
