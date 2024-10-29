@@ -47,7 +47,7 @@ main.custom_plugin_repos = [
     "https://github.com/Sniffleupagus/pwnagotchi_plugins/archive/master.zip",
     "https://github.com/NeonLightning/pwny/archive/master.zip",
     "https://github.com/marbasec/UPSLite_Plugin_1_3/archive/master.zip",
-    "https://github.com/Exnuz/pwnagotchi-plugins-v2/archive/heads/master.zip", #<-- Наш репозиторий
+    "https://github.com/Exnuz/pwnagotchi-plugins-v2/archive/master.zip", #<-- Наш репозиторий
 ]
 ```
 Обратите внимание что в config.toml не должно быть повторов!
